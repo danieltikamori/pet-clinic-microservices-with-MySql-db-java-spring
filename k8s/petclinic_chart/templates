@@ -150,6 +150,25 @@ items:
     metadata:
       annotations:
         kompose.cmd: kompose convert -f docker-compose.yml -o petclinic_chart/templates
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mysql-server
+      name: mysql-server
+    spec:
+      ports:
+        - name: "3306"
+          port: 3306
+          targetPort: 3306
+      selector:
+        io.kompose.service: mysql-server
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o petclinic_chart/templates
         kompose.image-pull-secret: regcred
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
@@ -257,6 +276,10 @@ items:
               ports:
                 - containerPort: 9090
               resources: {}
+          initContainers:
+            - name: init-discovery-server
+              image: busybox
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']    
           imagePullSecrets:
             - name: regcred
           restartPolicy: Always
@@ -300,11 +323,11 @@ items:
               ports:
                 - containerPort: 8080
               resources: {}
-	  initContainers:
+          initContainers:
             - name: init-discovery-server
               image: busybox
-              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']
-              imagePullSecrets:
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']               
+          imagePullSecrets:
             - name: regcred
           restartPolicy: Always
     status: {}
@@ -323,9 +346,9 @@ items:
         io.kompose.service: api-gateway
       name: api-gateway
     spec:
-  ingressClassName: nginx
-  rules:
-    - host: '{{ .Values.DNS_NAME }}'
+      ingressClassName: nginx
+      rules:
+        - host: '{{ .Values.DNS_NAME }}'
           http:
             paths:
               - backend:
@@ -407,10 +430,10 @@ items:
               ports:
                 - containerPort: 8081
               resources: {}
-	  initContainers:
+          initContainers:
             - name: init-discovery-server
               image: busybox
-              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;'] 
           imagePullSecrets:
             - name: regcred
           restartPolicy: Always
@@ -448,11 +471,11 @@ items:
               ports:
                 - containerPort: 8761
               resources: {}
-	  initContainers:
+          initContainers:
             - name: init-config-server
               image: busybox
-              command: ['sh', '-c', 'until nc -z config-server:8888; do echo waiting for config-server; sleep 2; done;']
-              imagePullSecrets:
+              command: ['sh', '-c', 'until nc -z config-server:8888; do echo waiting for config-server; sleep 2; done;']    
+          imagePullSecrets:
             - name: regcred
           restartPolicy: Always
     status: {}
@@ -526,12 +549,50 @@ items:
               ports:
                 - containerPort: 7979
               resources: {}
-	  initContainers:
-      	    - name: init-discovery-server
+          initContainers:
+            - name: init-discovery-server
               image: busybox
-              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;'] 
           imagePullSecrets:
             - name: regcred
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o petclinic_chart/templates
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mysql-server
+      name: mysql-server
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: mysql-server
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o petclinic_chart/templates
+            kompose.version: 1.26.1 (a9d05d509)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: mysql-server
+        spec:
+          containers:
+            - env:
+                - name: MYSQL_DATABASE
+                  value: petclinic
+                - name: MYSQL_ROOT_PASSWORD
+                  value: petclinic
+              image: mysql:5.7.8
+              name: mysql-server
+              ports:
+                - containerPort: 3306
+              resources: {}
           restartPolicy: Always
     status: {}
   - apiVersion: apps/v1
@@ -641,9 +702,9 @@ items:
                 - containerPort: 8083
               resources: {}
           initContainers:
-             - name: init-discovery-server
-               image: busybox
-               command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']
+            - name: init-discovery-server
+              image: busybox
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;'] 
           imagePullSecrets:
             - name: regcred
           restartPolicy: Always
@@ -681,11 +742,11 @@ items:
               ports:
                 - containerPort: 8082
               resources: {}
-	  initContainers:
+          initContainers:
             - name: init-discovery-server
               image: busybox
-              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;']
-              imagePullSecrets:
+              command: ['sh', '-c', 'until nc -z discovery-server:8761; do echo waiting for discovery-server; sleep 2; done;'] 
+          imagePullSecrets:
             - name: regcred
           restartPolicy: Always
     status: {}
