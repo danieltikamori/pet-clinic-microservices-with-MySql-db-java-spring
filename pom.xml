@@ -33,6 +33,7 @@
         <spring-boot.version>3.2.4</spring-boot.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <micrometer.version>1.13.1</micrometer.version>
+        <jolokia-core.version>1.7.1</jolokia-core.version>
 
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 
