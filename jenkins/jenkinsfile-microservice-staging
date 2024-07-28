@@ -9,7 +9,7 @@ pipeline {
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         // Your Rancher server URL
-        RANCHER_URL="ranchertr.amlu.me"
+        RANCHER_URL="https://ranchertr.amlu.me"
         // Get the project-id from Rancher UI (projects/namespaces --> petclinic-cluster-staging namespace --> Edit yaml --> copy projectId )
         RANCHER_CONTEXT="c-m-qcfzd49k:p-2stj8" 
        //First part of projectID
