@@ -15,7 +15,7 @@ pipeline {
        //First part of projectID
         CLUSTERID="c-m-qcfzd49k"
         // Jenkins' Global credential ID
-        RANCHER_CREDS=credentials('rancher-petclinic-credential')
+        RANCHER_CREDS=credentials('rancher-petclinic-credentials')
     }
     stages {
         stage('Package Application') {
